@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>General User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">General User Dashboard</h1>
+        <h2>Your Songs</h2>
+        <ul class="list-group">
+            {% for det in details %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>
+                            <strong>{{ det[1] }}</strong> by {{ det[4] }}
+                            {% if det[7] %}
+                                (Album: {{ det[7] }})
+                            {% endif %}
+                        </span>
+                        <a class="btn btn-success" href="{{det[0]}}" target="_blank">Play</a>
+                    </div>
+                    <button class="btn btn-info mt-2" onclick="toggleLyrics()">Lyrics</button>
+                    <div id="togLyrics" class="mt-2">
+                        {% if det[9] %}
+                            {{ det[9] }}
+                        {% endif %}
+                    </div>
+                    <p>Rating: {{ det[11] }}/5</p>
+                    <form class="mt-2" id="rating-form" action="{{ url_for('general.rate_song', song_id=det[10]) }}" method="post">
+                        <label for="rating">Rate this song (1-5): </label>
+                        <select class="form-control" name="rating" id="rating">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary mt-2">Submit Rating</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        function toggleLyrics() {
+            var x = document.getElementById("togLyrics");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+        let player;
+        // Initialize the Spotify Web Playback SDK
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const token = 'BQD8JFFlj0gAgKeu6X8vARL1-DTG3mF2sRH398a-ORoevWxtMHyBVUcx83u8_H4BEpeWzxQTsffdU39l2zRvD12P6pWpPtfvX9Gk_iHVKTXJohVFfpA';  // Replace with the user's Spotify access token
+            player = new Spotify.Player({
+                name: 'music_app',
+                getOAuthToken: callback => {
+                    callback(token);
+                },
+            });
+            console.log(player)
+            // Connect to the player
+            player.connect().then(success => {
+                if (success) {
+                    console.log('The Web Playback SDK is connected to Spotify!');
+                }
+            });
+        }
+
+        // Add event listeners for play and pause buttons
+        const playButtons = document.querySelectorAll('.play-button');
+        const pauseButtons = document.querySelectorAll('.pause-button');
+
+        playButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const uri = button.getAttribute('data-uri');
+                player.togglePlay(uri)
+            });
+        });
+
+        pauseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const uri = button.getAttribute('data-uri');
+                player.pause(uri);
+            });
+        });
+    </script>
+</body>
+</html>
