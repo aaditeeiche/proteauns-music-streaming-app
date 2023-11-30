@@ -102,7 +102,7 @@ Looking ahead, Proteauns is poised for further enhancements. We wish to complete
 
 
 # References
-Flask Documentation
-Bootstrap Documentation
-Spotify API Documentation
-Musixmatch API Documentation
+- Flask Documentation
+- Bootstrap Documentation
+- Spotify API Documentation
+- Musixmatch API Documentation
